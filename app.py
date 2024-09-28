@@ -1,7 +1,7 @@
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
-
+import streamlit as st
 
 def get_vector_store(model_name: str, data_dir:str, chunk_size: int = None):
     documents = SimpleDirectoryReader(data_dir).load_data()
@@ -43,17 +43,20 @@ def get_vector_store(model_name: str, data_dir:str, chunk_size: int = None):
     # return RetrieverQueryEngine(retriever=retriever)
 
 if __name__ == '__main__':
-    question = """
-    What makes Appa to pursue a career in teaching? 
-    # """
-    try:
-        vector_store = get_vector_store("BAAI/bge-base-en-v1.5", "data")
-        chat_engine = vector_store.as_chat_engine(
-                chat_mode="condense_question",
-                verbose=True
-        )
-        response = chat_engine.chat(question)
-        print(response)
-        # query_engine2 = get_query_engine("sentence-transformers/all-mpnet-base-v2", 1024)
-    except Exception as e:
-        print("Exception: ---->", e)
+
+
+    vector_store = get_vector_store("BAAI/bge-base-en-v1.5", "data")
+    chat_engine = vector_store.as_chat_engine(
+            chat_mode="condense_question",
+            verbose=True
+    )
+
+    chat_engine = vector_store.as_chat_engine(chat_mode="condense_question", verbose=True)
+    input = st.text_input("ask your question")
+
+    st.write("condense chat app")
+    if input is not None:
+        btn = st.button("submit")
+        if btn:
+            response = chat_engine.stream_chat(input)
+            st.write_stream(response.response_gen)
