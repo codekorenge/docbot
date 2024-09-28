@@ -1,3 +1,6 @@
+from http.client import responses
+from pprint import pprint
+
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
@@ -26,37 +29,47 @@ def get_vector_store(model_name: str, data_dir:str, chunk_size: int = None):
         show_progress=True,
     )
 
-    # Returns a query engine.
-    # return index.as_query_engine(
-    #     text_qa_template=text_qa_template,
-    #     refine_template=refine_template
-    # )
-
-    # return index.as_chat_engine(
-    #     chat_mode="condense_question",
-    #     verbose=True
-    # )
     return index
 
-    # Returns a query engine.
-    # retriever = VectorIndexRetriever(index=index,similarity_top_k=4)
-    # return RetrieverQueryEngine(retriever=retriever)
 
 if __name__ == '__main__':
-
-
+    # Llama code.
     vector_store = get_vector_store("BAAI/bge-base-en-v1.5", "data")
     chat_engine = vector_store.as_chat_engine(
             chat_mode="condense_question",
             verbose=True
     )
 
-    chat_engine = vector_store.as_chat_engine(chat_mode="condense_question", verbose=True)
-    input = st.text_input("ask your question")
+    st.title("{ docbot }")
 
-    st.write("condense chat app")
-    if input is not None:
-        btn = st.button("submit")
-        if btn:
-            response = chat_engine.stream_chat(input)
+    # Set a default model
+    if "llm_model" not in st.session_state:
+        st.session_state["llm_model"] = "llama3.5"
+
+    # Initialize chat history
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Display chat messages from history on app rerun
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Accept user input
+    prompt = st.chat_input("ask me something")
+    if prompt:
+        print(prompt)
+        # Display user message in chat message container
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        response = chat_engine.stream_chat(prompt)
+
+        with st.chat_message("assistant"):
             st.write_stream(response.response_gen)
+            pprint(response)
+            # print(response.sources)
+
+        st.session_state.messages.append({"role": "assistant", "content": response})
