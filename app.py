@@ -1,10 +1,10 @@
-from helpers.llama_helper import get_vector_store, get_chat_engine
+from helpers.llama_helper import get_vector_index, get_chat_engine
 import streamlit as st
 
 
 if __name__ == '__main__':
     # Get LlamaIndex vector-store and chat-engine.
-    vector_store, settings= get_vector_store("BAAI/bge-base-en-v1.5", "data", 200)
+    vector_store, settings= get_vector_index("BAAI/bge-base-en-v1.5", "data", 200)
     chat_engine = get_chat_engine(vector_store, settings, 3900)
 
     st.title("{ docbot }")

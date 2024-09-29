@@ -1,12 +1,19 @@
 from pprint import pprint
+from tabnanny import verbose
+
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
+from llama_index.core import VectorStoreIndex, get_response_synthesizer
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.postprocessor import SimilarityPostprocessor
 from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.core import ChatPromptTemplate
+from llama_index.core.node_parser import SentenceSplitter
 
-def get_vector_store(model_name: str, data_dir:str, chunk_size: int = None):
+def get_vector_index(model_name: str, data_dir:str, chunk_size: int = None, chunk_overlap: int = None ):
     documents = SimpleDirectoryReader(data_dir).load_data()
 
     # This code was disabled because this only works for OpenAI.
@@ -15,27 +22,50 @@ def get_vector_store(model_name: str, data_dir:str, chunk_size: int = None):
     Settings.embed_model = HuggingFaceEmbedding(
         cache_folder="embedding-model",
         model_name=model_name,
+        # embed_batch_size=3072 (for llama3.1)
     )
 
     if chunk_size is not None:
         Settings.chunk_size = chunk_size
 
+    if chunk_overlap is not None:
+        Settings.chunk_overlap = chunk_overlap
+
     # The llm should run because the API endpoint will be called for embeddings.
-    Settings.llm = Ollama(model="llama3.1", request_timeout=360.0)
+    Settings.llm = Ollama(model="llama3.1",
+                          temperature=0.1,
+                          request_timeout=360.0)
 
     # Vector Store Index turns all of your text into embeddings using an API from your LLM
     index = VectorStoreIndex.from_documents(
         documents,
         show_progress=True,
-    ), Settings
+    )
 
-    return index
+    return index, Settings
 
-def get_chat_engine(vector_store: VectorStoreIndex, settings: Settings, token_limit: int):
+def get_query_retriever(index: VectorStoreIndex, similarity_cutoff: float ):
+    # configure retriever
+    retriever = VectorIndexRetriever(
+        index=index,
+        similarity_top_k=10,
+    )
+
+    # configure response synthesizer
+    response_synthesizer = get_response_synthesizer()
+
+    # assemble query engine
+    return RetrieverQueryEngine(
+        retriever=retriever,
+        response_synthesizer=response_synthesizer,
+        node_postprocessors=[SimilarityPostprocessor(similarity_cutoff=similarity_cutoff)]
+    )
+
+def get_chat_engine(index: VectorStoreIndex, settings: Settings, token_limit: int):
     # memory = ChatMemoryBuffer.from_defaults(token_limit=3900)
     memory = ChatMemoryBuffer.from_defaults(token_limit=token_limit)
 
-    return vector_store.as_chat_engine(
+    return index.as_chat_engine(
         chat_mode='condense_plus_context',
         llm=settings.llm,
         memory=memory,
@@ -48,9 +78,8 @@ def get_chat_engine(vector_store: VectorStoreIndex, settings: Settings, token_li
         verbose=True
     )
 
-
 # TODO: Need revision!
-def get_query_engine(vector_store: VectorStoreIndex):
+def get_query_engine(index: VectorStoreIndex):
     # qa_prompt_str = (
     #     "Context information is below.\n"
     #     "---------------------\n"
@@ -97,7 +126,7 @@ def get_query_engine(vector_store: VectorStoreIndex):
     # refine_template = ChatPromptTemplate(chat_refine_msgs)
 
     # Returns a query engine.
-    return vector_store.as_query_engine(
+    return index.as_query_engine(
         response_mode="tree_summarize",
         verbose=True
     )
