@@ -1,8 +1,9 @@
+import unittest
 from unittest import TestCase
 
 from helpers.llama_helper import *
 
-class Test(TestCase):
+class Test(unittest.TestCase):
     def test_get_vector_store(self):
         index, settings = get_vector_index("BAAI/bge-base-en-v1.5", "../data", 200)
         engine = get_chat_engine(index, settings, 3900)
@@ -30,4 +31,7 @@ class Test(TestCase):
                   # f"node-meta:{node.metadata}, "
                   f"\tdocument:{node.metadata['file_name']}, "
                   f"\ttext:{node.text}")
+
+if __name__ == '__main__':
+    unittest.main()
 

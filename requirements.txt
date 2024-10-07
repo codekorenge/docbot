@@ -2,3 +2,4 @@ llama-index
 llama-index-embeddings-huggingface
 llama-index-llms-ollama
 streamlit
+llama-index-embeddings-ollama
