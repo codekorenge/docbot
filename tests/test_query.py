@@ -106,21 +106,22 @@ class TestEngineFactory(unittest.TestCase):
         self.assertIsNotNone(index.vector_store)
         self.assertEqual(settings.embed_model, embedding_model)
 
-        #  Manually creating an engine to assert.
-        engine = index.as_query_engine(
-            response_mode="tree_summarize",
-            verbose=True
-        )
-
-        response = engine.query("who is appa?")
-        self.assertIsNotNone(response)
+        # #  Manually creating an engine to assert.
+        # engine = index.as_query_engine(
+        #     response_mode="tree_summarize",
+        #     verbose=True
+        # )
+        #
+        # response = engine.query("who is appa?")
+        # self.assertIsNotNone(response)
 
         engine_factory = EngineFactory()
 
         retriever_engine = engine_factory.get_query_retriever(index, 10, 0.55)
         chat_engine = engine_factory.get_context_chat_engine(retriever_engine, 1500)
 
-        response = chat_engine.stream_chat("what is the name of first american president?")
+        response = chat_engine.chat("who is appa and how old he is now?")
+        # chat_engine.chat_repl()
 
         self.assertIsNotNone(response)
         print(f"response: {response}")

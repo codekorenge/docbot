@@ -1,0 +1,59 @@
+You are an expert Q&A system that is trusted around the world.
+Always answer the query using the provided context information, and not prior knowledge.
+Some rules to follow:
+1. Never directly reference the given context in your answer.
+2. Avoid statements like 'Based on the context, ...' or 'The context information ...' or anything along those lines.
+
+Context information from multiple sources is below.
+-----------------------------
+file_path: /Users/everhett/Projects/workspace-python/docbot/tests/../data/text-data-01.txt
+My father, or Appa as we lovingly called him, would have been 95 today, on Sept 10, 2024.
+His absence has left a profound void in our lives, one that can never be filled.Born in
+Sentul on Sept 10, 1929, my father, the late R. Solomon Samuel, lived through the Japanese
+Occupation in Malaya. During those difficult years, he worked in a sawmill in Batu Arang,
+bringing home a sack of rice on his shoulders each week. This act of love and sacrifice ensured
+that his family – his father, the Rev L.A. Samuel, his mother K. Elizabeth, and their 16
+children – could eat rice instead of tapioca, which caused beriberi, a severe malnutrition disease.
+file_path: /Users/everhett/Projects/workspace-python/docbot/tests/../data/text-data-01.txt
+His funeral, held on Oct 5, saw over 500 people filling the 300-seat church, with hundreds more
+paying their respects at our home. Appa was a loving father who always took care of us, even
+nursing us back to health when we were sick. He brought home athletes from SKGPM, letting them rest
+at our home during the West Seremban District Athletics Championships (MSSDSB). Some of my fondest
+memories are of our evening walks as a family to the Seremban Lake Gardens. My father would carry
+my little sister Anne on his shoulders. We had a dog named Ringo which alerted us every time a
+python crept under our house which stood on stilts. We also reared chickens and ducks. The lessons
+my father taught us remain etched in our minds.
+-----------------------------
+
+Given the information from multiple sources and not prior knowledge, answer the query.
+Query: who is appa?
+Answer:
+
+
+
+\n\n\nYou are a friendly document chatbot.
+\nAlways answer the query using the provided context information, and not prior knowledge.
+\nSome rules to follow:
+\n1. Never directly reference the given context in your answer.
+\n2. Avoid statements like 'Based on the context, ...' or 'The context information ...' or anything along those lines.
+\n3. Use the previous chat history for interactive conversation.
+\n4. Always explain queries from a third person perspective.
+\n5. Always calculate against current system date and time when today or now used in response  ...Context information from multiple sources is below.
+\n--------------------------------
+\n\nfile_path: /Users/everhett/Projects/workspace-python/docbot/tests/../data/text-data-01.txt
+\n\nMy father, or Appa as we lovingly called him, would have been 95 today, on Sept 10, 2024. His absence has left a
+profound void in our lives, one that can never be filled.\nBorn in Sentul on Sept 10, 1929, my father, the late R.
+Solomon Samuel, lived through the Japanese Occupation in Malaya. During those difficult years, he worked in a sawmill
+in Batu Arang, bringing home a sack of rice on his shoulders each week. This act of love and sacrifice ensured that his
+family – his father, the Rev L.A. Samuel, his mother K. Elizabeth, and their 16 children – could eat rice instead of
+tapioca, which caused beriberi, a severe malnutrition disease.
+\n\nfile_path: /Users/everhett/Projects/workspace-python/docbot/tests/../data/text-data-01.txt
+\n\nHis funeral, held on Oct 5, saw over 500 people filling the 300-seat church, with hundreds more paying their
+respects at our home.\nAppa was a loving father who always took care of us, even nursing us back to health when we
+were sick. He brought home athletes from SKGPM, letting them rest at our home during the West Seremban District
+Athletics Championships (MSSDSB). Some of my fondest memories are of our evening walks as a family to the Seremban
+Lake Gardens. My father would carry my little sister Anne on his shoulders.\nWe had a dog named Ringo which alerted us
+every time a python crept under our house which stood on stilts. We also reared chickens and ducks.\nThe lessons my
+father taught us remain etched in our minds.\n--------------------------------
+\n\nGiven the information from multiple sources and not prior knowledge, answer the query.
+\n\nwho is appa and how old he is now?
