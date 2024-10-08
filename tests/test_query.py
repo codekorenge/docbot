@@ -120,7 +120,7 @@ class TestEngineFactory(unittest.TestCase):
         retriever_engine = engine_factory.get_query_retriever(index, 10, 0.55)
         chat_engine = engine_factory.get_context_chat_engine(retriever_engine, 1500)
 
-        response = chat_engine.chat("what is the name of first american president?")
+        response = chat_engine.stream_chat("what is the name of first american president?")
 
         self.assertIsNotNone(response)
         print(f"response: {response}")

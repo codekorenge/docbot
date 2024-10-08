@@ -1,11 +1,27 @@
+from helpers.embedding_factory import EmbeddingFactory
+from helpers.engine_factory import EngineFactory
 from helpers.llama_helper import get_vector_index, get_chat_engine
 import streamlit as st
 
+from helpers.vector_factory import VectorFactory
 
 if __name__ == '__main__':
     # Get LlamaIndex vector-store and chat-engine.
-    vector_store, settings= get_vector_index("BAAI/bge-base-en-v1.5", "data", 200)
-    chat_engine = get_chat_engine(vector_store, settings, 3900)
+    # vector_store, settings= get_vector_index("BAAI/bge-base-en-v1.5", "data", 200)
+    # chat_engine = get_chat_engine(vector_store, settings, 3900)
+
+    # Creating the embedding model for transforming corpus into vector embeddings.
+    embedding_factory = EmbeddingFactory("embedding-model")
+    embedding_model = embedding_factory.get_huggingface_embedding("BAAI/bge-base-en-v1.5")
+
+    # The embedding model will be used to read the corpus inside the directory and transforming into vector embeddings.
+    factory = VectorFactory("llama3.1", embedding_model, True)
+    index, settings = factory.get_vector_index("data", 200, 10)
+
+    # The retriever is configured to retrieve K chunks.
+    engine_factory = EngineFactory()
+    retriever_engine = engine_factory.get_query_retriever(index, 10, 0.55)
+    chat_engine = engine_factory.get_context_chat_engine(retriever_engine, 1500)
 
     st.title("{ docbot }")
 
@@ -35,6 +51,9 @@ if __name__ == '__main__':
         response = chat_engine.stream_chat(prompt)
 
         with st.chat_message("assistant"):
-            st.write_stream(response.response_gen)
+            if len(response.source_nodes) ==0:
+                st.write("Sorry, can't find any information regarding that in the local corpus.")
+            else:
+                st.write_stream(response.response_gen)
 
         st.session_state.messages.append({"role": "assistant", "content": response})
