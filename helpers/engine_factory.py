@@ -21,19 +21,20 @@ class EngineFactory:
     def get_query_retriever(self,
                             index: VectorStoreIndex,
                             similarity_top_k: int,
-                            similarity_cutoff: float) -> RetrieverQueryEngine:
+                            similarity_cutoff: float,
+                            verbose: bool) -> RetrieverQueryEngine:
 
         retriever = VectorIndexRetriever(
             index=index,
             similarity_top_k=similarity_top_k,
-            verbose=True
+            verbose=verbose
         )
 
         # configure response synthesizer
         # response_synthesizer = get_response_synthesizer(verbose=True)
         response_synthesizer = get_response_synthesizer(
             response_mode=ResponseMode.COMPACT,
-            verbose=True
+            verbose=verbose
         )
 
         # assemble query engine
@@ -46,7 +47,11 @@ class EngineFactory:
     """
     Code was referenced from: https://docs.llamaindex.ai/en/stable/module_guides/deploying/chat_engines/usage_pattern/
     """
-    def get_context_chat_engine(self, retriever: RetrieverQueryEngine, token_limit:int) -> CondensePlusContextChatEngine:
+    def get_context_chat_engine(self,
+                                retriever: RetrieverQueryEngine,
+                                token_limit:int,
+                                prompts:str,
+                                verbose: bool) -> CondensePlusContextChatEngine:
         memory = ChatMemoryBuffer.from_defaults(token_limit=token_limit)
 
         # custom_prompt = PromptTemplate(
@@ -81,19 +86,8 @@ class EngineFactory:
         #     verbose=True,
         # )
 
-        system_prompt=("\nYou are a friendly document chatbot."
-                       "\nAlways answer the query using the provided context information, and not prior knowledge."
-                       "\nSome rules to follow:"
-                       "\n1. Never directly reference the given context in your answer."
-                       "\n2. Avoid statements like 'Based on the context, ...' or 'The context information ...' or anything along those lines."
-                       "\n3. Use the previous chat history for interactive conversation."
-                       "\n4. Always explain queries from a third person perspective."
-                       "\n5. Always calculate against current system date and time when today or now used in response  ...")
-        context_prompt= ("\n\nContext information from multiple sources is below."
-                         "\n--------------------------------\n\n"
-                         "{context_str}"
-                         "\n--------------------------------"
-                         "\n\nGiven the information from multiple sources and not prior knowledge, answer the query.\n")
+        system_prompt = open( prompts + "system_prompt.txt", "r").read()
+        context_prompt = open(prompts + "context_prompt.txt", "r").read()
 
         # Swapped the system and context places because context is inserted first.
         chat_engine = CondensePlusContextChatEngine.from_defaults(
@@ -104,7 +98,7 @@ class EngineFactory:
             # condense_prompt=custom_prompt,
             # condense_question_prompt=custom_prompt,
             # chat_history=custom_chat_history,
-            verbose=True,
+            verbose=verbose,
         )
 
         return chat_engine

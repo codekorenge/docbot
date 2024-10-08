@@ -8,6 +8,7 @@ class VectorFactory:
     def __init__(self,
                  model_name: str,
                  embedding_model,
+                 temperature,
                  show_progress: bool = True):
         self.model_name = model_name
         self.embedding_model = embedding_model

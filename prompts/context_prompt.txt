@@ -1,0 +1,7 @@
+
+ Context information from multiple sources is below.
+--------------------------------
+{context_str}
+--------------------------------
+
+Given the information from multiple sources and not prior knowledge, answer the query.

@@ -1,3 +1,4 @@
+from helpers.app_config import Configuration
 from helpers.embedding_factory import EmbeddingFactory
 from helpers.engine_factory import EngineFactory
 from helpers.llama_helper import get_vector_index, get_chat_engine
@@ -6,24 +7,36 @@ import streamlit as st
 from helpers.vector_factory import VectorFactory
 
 if __name__ == '__main__':
-    # Get LlamaIndex vector-store and chat-engine.
-    # vector_store, settings= get_vector_index("BAAI/bge-base-en-v1.5", "data", 200)
-    # chat_engine = get_chat_engine(vector_store, settings, 3900)
+    # Load application configuration from config.ini file.
+    config = Configuration()
 
     # Creating the embedding model for transforming corpus into vector embeddings.
     embedding_factory = EmbeddingFactory("embedding-model")
-    embedding_model = embedding_factory.get_huggingface_embedding("BAAI/bge-base-en-v1.5")
+    embedding_model = embedding_factory.get_huggingface_embedding(config.config_values["embed_name"])
 
     # The embedding model will be used to read the corpus inside the directory and transforming into vector embeddings.
-    factory = VectorFactory("llama3.1", embedding_model, True)
-    index, settings = factory.get_vector_index("data", 200, 10)
+    vector_factory = VectorFactory(config.config_values["llm_name"],
+                                   embedding_model,
+                                   config.config_values["llm_temperature"],
+                                   config.config_values["app_progress"])
+
+    # Returns an updated global setting configuration that need to be applied when required.
+    index, settings = vector_factory.get_vector_index(config.config_values["app_data"],
+                                                      config.config_values["chunk_size"],
+                                                      config.config_values["chunk_overlap"])
 
     # The retriever is configured to retrieve K chunks.
     engine_factory = EngineFactory()
-    retriever_engine = engine_factory.get_query_retriever(index, 10, 0.55)
-    chat_engine = engine_factory.get_context_chat_engine(retriever_engine, 1500)
+    retriever_engine = engine_factory.get_query_retriever(index,
+                                                          config.config_values["ret_max"],
+                                                          config.config_values["ret_score"],
+                                                          config.config_values["app_verbose"])
+    chat_engine = engine_factory.get_context_chat_engine(retriever_engine,
+                                                         config.config_values["llm_token_limit"],
+                                                         config.config_values["app_prompts"],
+                                                         config.config_values["app_verbose"])
 
-    st.title("{ docbot }")
+    st.title(config.config_values['app_name'])
 
     # Set a default model
     if "llm_model" not in st.session_state:
