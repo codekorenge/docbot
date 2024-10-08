@@ -20,15 +20,15 @@ This code utilizes api/embeddings endpoint to generate running model's embedding
 This code was taken from the following URL.
 https://docs.llamaindex.ai/en/stable/examples/embeddings/ollama_embedding/
 """
-def get_ollama_embedding(model_name: str) -> OllamaEmbedding:
-    return OllamaEmbedding(
-        model_name=model_name,
-        base_url="http://localhost:11434",
-        ollama_additional_kwargs={"mirostat": 0},
-    )
-
-def get_text_embedding(embedding: OllamaEmbedding, text:str)-> list[float] :
-    return embedding.get_text_embedding(text)
+# def get_ollama_embedding(model_name: str) -> OllamaEmbedding:
+#     return OllamaEmbedding(
+#         model_name=model_name,
+#         base_url="http://localhost:11434",
+#         ollama_additional_kwargs={"mirostat": 0},
+#     )
+#
+# def get_text_embedding(embedding: OllamaEmbedding, text:str)-> list[float] :
+#     return embedding.get_text_embedding(text)
 
 # def get_vector_index1(model_name: str,
 #                      embedding_model,
@@ -87,7 +87,7 @@ def get_vector_index(model_name: str, data_dir:str, chunk_size: int = None, chun
     # index=VectorStoreIndex.from_documents(documents,show_progress=True)
     # Remember! Don't use ServiceContext it was depreciated and replaced with Settings.
     Settings.embed_model = HuggingFaceEmbedding(
-        # cache_folder="embedding-model",
+        cache_folder="embedding-model",
         model_name=model_name,
         # embed_batch_size=3072 (for llama3.1)
     )
@@ -120,7 +120,7 @@ def get_query_retriever(similarity_top_k:int,
     # index=VectorStoreIndex.from_documents(documents,show_progress=True)
     # Remember! Don't use ServiceContext it was depreciated and replaced with Settings.
     Settings.embed_model = HuggingFaceEmbedding(
-        # cache_folder="embedding-model",
+        cache_folder="embedding-model",
         model_name="BAAI/bge-base-en-v1.5",
         # embed_batch_size=3072 (for llama3.1)
     )

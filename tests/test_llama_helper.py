@@ -17,13 +17,13 @@ class Test(unittest.TestCase):
         pprint(response)
 
     def test_get_query_retriever(self):
-        index, settings = get_vector_index("BAAI/bge-base-en-v1.5",
-                                           "../data",
-                                           500,
-                                           50)
+        # index, settings = get_vector_index("BAAI/bge-base-en-v1.5",
+        #                                    "../data",
+        #                                    500,
+        #                                    50)
 
         # engine= index.as_query_engine(settings = settings)
-        engine = get_query_retriever(index, 0.10)
+        engine = get_query_retriever(10, 0.10)
         response = engine.query("Who is Appa?")
         for node in response.source_nodes:
             print(f"score:{node.score}, "
