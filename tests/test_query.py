@@ -4,6 +4,7 @@ from helpers.app_config import Configuration
 from helpers.embedding_factory import EmbeddingFactory
 from helpers.engine_factory import EngineFactory
 from helpers.vector_factory import VectorFactory
+from helpers.metrics import display_retrieval_metrics
 
 class TestQuery(unittest.TestCase):
 
@@ -41,21 +42,14 @@ class TestQuery(unittest.TestCase):
                                                              config.config_values["app_prompts"],
                                                              config.config_values["app_verbose"])
 
+        print("-------------------[RETRIEVAL-START]--------------------\r\n")
+
         response = chat_engine.chat("who is appa and how old he is now?")
+        display_retrieval_metrics(response, config)
+        print(f"Answer: {response}")
+
+        print("--------------------[RETRIEVAL-END]---------------------\r\n")
         # chat_engine.chat_repl()
-
-        self.assertIsNotNone(response)
-        print(f"response: {response}")
-
-        cnt = 0
-        for node in response.source_nodes:
-            cnt += 1
-            print(f"{cnt}."
-                  f"\tscore:{node.score}, "
-                  f"\tword-count:{len(node.text.split())}, "
-                  # f"node-meta:{node.metadata}, "
-                  f"\tdocument:{node.metadata['file_name']}, "
-                  f"\ttext:{node.text[0:30]} ...")
 
 if __name__ == '__main__':
     unittest.main()
