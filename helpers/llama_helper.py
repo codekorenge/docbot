@@ -40,7 +40,7 @@ https://docs.llamaindex.ai/en/stable/examples/embeddings/ollama_embedding/
 #     # documents = Document(
 #     #     text=text,
 #     #     metadata={
-#     #         "file_name": "01-Legacy of teaching.txt",
+#     #         "file_name": "01",
 #     #         "category": "story",
 #     #         "author": "star",
 #     #     },

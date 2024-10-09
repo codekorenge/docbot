@@ -18,6 +18,7 @@ class Configuration:
         # debug_mode = config.getboolean('General', 'debug')
         app_name = config.get('App', 'name')
         app_data = config.get('App', 'data')
+        app_metadata = config.get('App', 'metadata')
         app_progress = config.getboolean('App', 'progress')
         app_verbose = config.getboolean('App', 'verbose')
         app_prompts = config.get('App', 'prompts')
@@ -42,6 +43,7 @@ class Configuration:
         self.config_values = {
             'app_name': app_name,
             'app_data': app_data,
+            'app_metadata': app_metadata,
             'app_progress': app_progress,
             'app_verbose': app_verbose,
             'app_prompts': app_prompts,
