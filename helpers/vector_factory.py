@@ -108,7 +108,7 @@ class VectorFactory:
         print(f"Configured params: chunk-size: [{chunk_size}] and chunk-overlap: [{chunk_overlap}].")
         print(f"\r\nFormula                     \t: total-word / chunk-size ~= chunk-count.")
         print(f"Expected                        \t: {total_word_cnt} / {chunk_size} = {total_word_cnt / chunk_size}.")
-        print(f"Actual                          \t: {total_word_cnt} / {chunk_size} ~= {total_chunk_cnt}.")
+        # print(f"Actual                          \t: {total_word_cnt} / {chunk_size} ~= {total_chunk_cnt}.")
         calculated_chuck_ave = total_word_cnt / len(total_word_cnt_list)
         print(f"Actual (ave(chunk-size))        \t: {total_word_cnt} / {calculated_chuck_ave} ~= {total_word_cnt/calculated_chuck_ave}.")
 
