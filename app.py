@@ -2,9 +2,55 @@ from helpers.app_config import Configuration
 from helpers.embedding_factory import EmbeddingFactory
 from helpers.engine_factory import EngineFactory
 from helpers.llama_helper import get_vector_index, get_chat_engine
+from llama_index.core.chat_engine import CondenseQuestionChatEngine, CondensePlusContextChatEngine
 import streamlit as st
 
 from helpers.vector_factory import VectorFactory
+from helpers.metrics import display_retrieval_metrics
+
+@st.experimental_fragment
+def reload_chat(engine: CondensePlusContextChatEngine):
+    st.title(config.config_values['app_name'])
+
+    # Set a default model
+    if "llm_model" not in st.session_state:
+        st.session_state["llm_model"] = "llama3.5"
+
+    # Initialize chat history
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Display chat messages from history on app rerun
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Accept user input
+    prompt = st.chat_input("ask me something")
+    if prompt:
+        print(prompt)
+        # Display user message in chat message container
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+
+        print("-------------------[RETRIEVAL-START]--------------------\r\n")
+
+        response = engine.stream_chat(prompt)
+
+        with st.chat_message("assistant"):
+            if len(response.source_nodes) == 0:
+                st.write("Sorry, can't find any information regarding that in the local corpus.")
+            else:
+                st.write_stream(response.response_gen)
+
+        display_retrieval_metrics(response, config)
+        print("--------------------[RETRIEVAL-END]---------------------\r\n")
+
+        st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 if __name__ == '__main__':
     # Load application configuration from config.ini file.
@@ -37,37 +83,5 @@ if __name__ == '__main__':
                                                          config.config_values["app_prompts"],
                                                          config.config_values["app_verbose"])
 
-    st.title(config.config_values['app_name'])
+    reload_chat(chat_engine)
 
-    # Set a default model
-    if "llm_model" not in st.session_state:
-        st.session_state["llm_model"] = "llama3.5"
-
-    # Initialize chat history
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    # Display chat messages from history on app rerun
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-    # Accept user input
-    prompt = st.chat_input("ask me something")
-    if prompt:
-        print(prompt)
-        # Display user message in chat message container
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        response = chat_engine.stream_chat(prompt)
-
-        with st.chat_message("assistant"):
-            if len(response.source_nodes) ==0:
-                st.write("Sorry, can't find any information regarding that in the local corpus.")
-            else:
-                st.write_stream(response.response_gen)
-
-        st.session_state.messages.append({"role": "assistant", "content": response})
