@@ -106,13 +106,66 @@ class VectorFactory:
 
         print(f"\r\nFor entire corpus: total-node: [{total_chunk_cnt}] and total-word: [{total_word_cnt}].")
         print(f"Configured params: chunk-size: [{chunk_size}] and chunk-overlap: [{chunk_overlap}].")
-        print(f"\r\nFormula              \t: total-word / chunk-size ~= chunk-count.")
-        print(f"Expected                \t: {total_word_cnt} / {chunk_size} = {total_word_cnt / chunk_size}.")
-        print(f"Actual                  \t: {total_word_cnt} / {chunk_size} ~= {total_chunk_cnt}.")
-        chunk_median = median(total_word_cnt_list)
-        calculated_chuck_median = total_word_cnt / int(median(total_word_cnt_list))
-        print(f"Actual (with median)    \t: {total_word_cnt} / {chunk_median} ~= {calculated_chuck_median}.")
+        print(f"\r\nFormula                     \t: total-word / chunk-size ~= chunk-count.")
+        print(f"Expected                        \t: {total_word_cnt} / {chunk_size} = {total_word_cnt / chunk_size}.")
+        print(f"Actual                          \t: {total_word_cnt} / {chunk_size} ~= {total_chunk_cnt}.")
+        calculated_chuck_ave = total_word_cnt / len(total_word_cnt_list)
+        print(f"Actual (ave(chunk-size))        \t: {total_word_cnt} / {calculated_chuck_ave} ~= {total_word_cnt/calculated_chuck_ave}.")
 
+    def __display_chunk_info_in_token(self,
+                             index: VectorStoreIndex,
+                             chunk_size: int,
+                             chunk_overlap: int):
+        # Display metric-2: Chunks
+        # Info not documented in API. Experimental discovery. In the dict returned by ref_doc_info,
+        # each info created for a doc (docs are for every document). Inside the doc, item with index 1
+        # holds the metadata and node_ids.
+        docs = index.ref_doc_info.items()
+        doc_list = {}
+        for doc in docs:
+            node_info = doc[1]
+            doc_name = node_info.metadata["file_name"]
+            doc_list[doc_name] = node_info.node_ids
+
+        total_word_cnt = 0
+        total_chunk_cnt = 0
+        total_word_cnt_list = []
+        for doc_name in doc_list:
+            node_ids = doc_list[doc_name]
+            node_counter = 0
+            node_word_cnt = 0
+            node_word_cnt_list = ""
+            for node_id in node_ids:
+                node_counter += 1
+                node = index.docstore.get_node(node_id)
+
+                tokens = nltk.word_tokenize(node.text)
+                node_word_cnt += len(tokens)
+                # print(len(node.text.split()))
+                # print(len(tokens))
+
+                node_word_cnt_list += str(len(tokens)) + ", "
+                total_word_cnt_list.append(str(len(tokens)))
+
+                # Interim: use words not token for calculation.
+                # tokens = nltk.word_tokenize(node.text)
+                # node_word_cnt_list += str(len(tokens)) + ", "
+
+            total_word_cnt += node_word_cnt
+            total_chunk_cnt += node_counter
+            node_word_cnt_list = node_word_cnt_list[:-2]
+
+            print(f"Doc[{doc_name}], total-chunk: [{node_counter}] and total-word: [{node_word_cnt}].")
+            print(f"\tList of word-count for each chunk:[{node_word_cnt_list}].")
+
+        print(f"\r\nFor entire corpus: total-node: [{total_chunk_cnt}] and total-word: [{total_word_cnt}].")
+        print(f"Configured params: chunk-size: [{chunk_size}] and chunk-overlap: [{chunk_overlap}].")
+        print(f"\r\nFormula                     \t: total-word / chunk-size ~= chunk-count.")
+        print(f"Expected                        \t: {total_word_cnt} / {chunk_size} = {total_word_cnt / chunk_size}.")
+        # print(f"Actual                          \t: {total_word_cnt} / {chunk_size} ~= {total_chunk_cnt}.")
+        calculated_chuck_ave = total_word_cnt / len(total_word_cnt_list)
+        print(
+            f"Actual (ave(chunk-size))        \t: {total_word_cnt} / {calculated_chuck_ave} ~= {total_word_cnt / calculated_chuck_ave}.")
 
     def get_vector_index(self,
                          data_dir: str,
