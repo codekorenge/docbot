@@ -22,6 +22,7 @@ if __name__ == '__main__':
 
     # Returns an updated global setting configuration that need to be applied when required.
     index, settings = vector_factory.get_vector_index(config.config_values["app_data"],
+                                                      config.config_values["app_metadata"],
                                                       config.config_values["chunk_size"],
                                                       config.config_values["chunk_overlap"])
 
