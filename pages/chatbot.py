@@ -1,13 +1,10 @@
 import streamlit as st
+from datetime import datetime
 
 import app
 from helpers.metrics import display_retrieval_metrics
 
-st.title("docbot")
-
-# Set a default model
-if "llm_model" not in st.session_state:
-    st.session_state["llm_model"] = "llama3.5"
+st.title(app.config.config_values["app_name"] +"- chatbot")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -17,6 +14,14 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+
+# Display only once.
+user = st.session_state["user"]
+if not app.greeted:
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    st.markdown(f"### Hello {user}, it's {current_time} now.")
+    app.greeted = True
 
 # Accept user input
 prompt = st.chat_input("ask me something")
@@ -35,7 +40,7 @@ if prompt:
 
     with st.chat_message("assistant"):
         if len(response.source_nodes) == 0:
-            st.write("Sorry, can't find any information regarding that in the local corpus.")
+            st.write(f"Sorry {user}, can't find any information regarding that in the local corpus.")
         else:
             st.write_stream(response.response_gen)
 

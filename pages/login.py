@@ -1,11 +1,11 @@
 import time
-
+from datetime import datetime
 import streamlit as st
 
 import app
 from helpers import chatbot_factory
 
-st.title("docbot - login")
+st.title(app.config.config_values["app_name"] +"- login")
 
 # Create an empty container
 placeholder = st.empty()
@@ -25,9 +25,12 @@ if submit and username in credentials.keys():
         st.session_state.user = username
         st.session_state.password = password
         placeholder.empty()
-        st.success("Login successful ...")
 
-        time.sleep(3)
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        st.success(f"[{current_time}]: Welcome back {username}. Getting you ready now ...")
+
+        time.sleep(1)
         st.success("Initializing chatbot ...")
         time.sleep(1)
         data_dir = app.config.config_values["app_data"]
