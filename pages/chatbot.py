@@ -3,6 +3,8 @@ import streamlit as st
 import app
 from helpers.metrics import display_retrieval_metrics
 
+st.title("docbot")
+
 # Set a default model
 if "llm_model" not in st.session_state:
     st.session_state["llm_model"] = "llama3.5"
