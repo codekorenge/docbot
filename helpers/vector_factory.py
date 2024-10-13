@@ -38,17 +38,17 @@ class VectorFactory:
         documents = (SimpleDirectoryReader(data_dir)
                      .load_data())
 
-        print("Checking metadata switch...")
+        print("Checking metadata-switch...")
 
         corpus_text = ""
         if metadata_dir is None:
             cnt = 0
             for document in documents:
                 cnt += 1
-                print(f"Doc[{cnt}], Title: {document.metadata['file_name']}");
+                print(f"doc-name: [{cnt}], \ttitle: {document.metadata['file_name']}");
                 corpus_text += document.get_content()
         else:
-            print("Metadata switch found, loading metadata...")
+            print("Metadata-switch found, loading metadata...")
             # Load metadata for each documents.
             for document in documents:
                 meta = self.__load_metadata(metadata_dir + "/" + document.metadata['file_name'] + ".json")
@@ -58,7 +58,8 @@ class VectorFactory:
             cnt = 0
             for document in documents:
                 cnt += 1
-                print(f"Doc[{cnt}], Title: {document.metadata['title']} \tDescription: {document.metadata['description']}");
+                print(f"doc-name: [{cnt}], \ttitle: {document.metadata['title']}")
+                print(f"\tdescription: {document.metadata['description']}");
                 corpus_text += document.get_content()
 
         return documents, corpus_text
@@ -101,16 +102,16 @@ class VectorFactory:
             total_chunk_cnt += node_counter
             node_word_cnt_list = node_word_cnt_list[:-2]
 
-            print(f"Doc[{doc_name}], total-chunk: [{node_counter}] and total-word: [{node_word_cnt}].")
+            print(f"doc-name: [{doc_name}], total-chunk: [{node_counter}] and total-word: [{node_word_cnt}].")
             print(f"\tList of word-count for each chunk:[{node_word_cnt_list}].")
 
-        print(f"\r\nFor entire corpus: total-node: [{total_chunk_cnt}] and total-word: [{total_word_cnt}].")
-        print(f"Configured params: chunk-size: [{chunk_size}] and chunk-overlap: [{chunk_overlap}].")
-        print(f"\r\nFormula                     \t: total-word / chunk-size ~= chunk-count.")
-        print(f"Expected                        \t: {total_word_cnt} / {chunk_size} = {total_word_cnt / chunk_size}.")
+        print(f"\r\nFor entire corpus, total-node: [{total_chunk_cnt}], and total-word: [{total_word_cnt}].")
+        print(f"Configured params, chunk-size: [{chunk_size}], and chunk-overlap: [{chunk_overlap}].")
+        print(f"\r\nFormula                 \t\t: total-word / chunk-size ~= chunk-count.")
+        print(f"Expected                \t\t: {total_word_cnt} / {chunk_size} = {total_word_cnt / chunk_size}.")
         # print(f"Actual                          \t: {total_word_cnt} / {chunk_size} ~= {total_chunk_cnt}.")
         calculated_chuck_ave = total_word_cnt / len(total_word_cnt_list)
-        print(f"Actual (ave(chunk-size))        \t: {total_word_cnt} / {calculated_chuck_ave} ~= {total_word_cnt/calculated_chuck_ave}.")
+        print(f"Actual (ave(chunk-size)) \t\t: {total_word_cnt} / {calculated_chuck_ave} ~= {total_word_cnt/calculated_chuck_ave}.")
 
     def __display_chunk_info_in_token(self,
                              index: VectorStoreIndex,
