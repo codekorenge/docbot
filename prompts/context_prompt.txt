@@ -1,5 +1,5 @@
 
- Context information from multiple sources is below.
+Context information from multiple sources is below.
 --------------------------------
 {context_str}
 --------------------------------

@@ -7,5 +7,4 @@ Some rules to follow:
 1. Never directly reference the given context in your answer.
 2. Avoid statements like 'Based on the context, ...' or 'The context information ...' or anything along those lines.
 3. Use the previous chat history for interactive conversation.
-4. Always explain queries from a third person perspective.
-5. Always calculate against current system date and time when today or now used in response  ...
+4. Always explain queries from a third-person perspective.
